@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirage League — Правила игры</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-deep: #040209;
+            --bg-card: rgba(13, 8, 24, 0.88);
+            --bg-inset: rgba(255,255,255,0.02);
+            --v1: #7c3aed;
+            --v2: #a855f7;
+            --v3: #d946ef;
+            --v4: #818cf8;
+            --lav: #c4b5fd;
+            --text: #f2eeff;
+            --text-dim: #a89cc9;
+            --text-muted: #584d78;
+            --border: rgba(168,85,247,0.09);
+            --border-accent: rgba(196,181,253,0.25);
+            --red: #fb7185;
+            --cyan: #22d3ee;
+            --radius: 20px;
+            --radius-sm: 12px;
+            --nav-width: 280px;
+        }
+
+        html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: rgba(168,85,247,0.4) transparent; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-deep);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        ::selection { background: rgba(168,85,247,0.35); color: #fff; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #040209; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--v2), var(--v3)); border-radius: 3px; }
+
+        /* === AURORA BACKGROUND === */
+        .bg-effects {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background:
+                radial-gradient(ellipse 70% 50% at 15% -10%, rgba(124,58,237,0.14), transparent),
+                radial-gradient(ellipse 50% 40% at 85% 15%, rgba(217,70,239,0.08), transparent),
+                radial-gradient(ellipse 60% 45% at 50% 110%, rgba(99,102,241,0.1), transparent);
+        }
+        .bg-effects::before {
+            content: ''; position: absolute; top: 12%; left: -8%;
+            width: 55%; height: 55%;
+            background: radial-gradient(ellipse, rgba(168,85,247,0.07) 0%, transparent 70%);
+            filter: blur(60px);
+            animation: aurora1 18s ease-in-out infinite;
+        }
+        .bg-effects::after {
+            content: ''; position: absolute; bottom: 0%; right: -8%;
+            width: 50%; height: 50%;
+            background: radial-gradient(ellipse, rgba(217,70,239,0.06) 0%, transparent 70%);
+            filter: blur(70px);
+            animation: aurora2 24s ease-in-out infinite reverse;
+        }
+        @keyframes aurora1 {
+            0%,100% { transform: translate(0,0) scale(1); }
+            33% { transform: translate(4%,6%) scale(1.08); }
+            66% { transform: translate(-2%,3%) scale(0.96); }
+        }
+        @keyframes aurora2 {
+            0%,100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(-5%,-5%) scale(1.1); }
+        }
+
+        /* Iridescent shimmer scanlines */
+        .heat-shimmer {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background-image: repeating-linear-gradient(0deg,
+                transparent, transparent 3px,
+                rgba(196,181,253,0.012) 3px, rgba(196,181,253,0.012) 5px);
+            animation: shimmer 9s linear infinite;
+            opacity: 0.6;
+        }
+        @keyframes shimmer { 0% { transform: translateY(0); } 100% { transform: translateY(12px); } }
+
+        /* === NAVIGATION === */
+        .nav-sidebar {
+            position: fixed; top: 0; left: 0; width: var(--nav-width); height: 100vh;
+            background: rgba(4,2,9,0.96);
+            backdrop-filter: blur(30px);
+            border-right: 1px solid var(--border);
+            z-index: 1000; display: flex; flex-direction: column; overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .nav-sidebar::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(196,181,253,0.4), transparent);
+        }
+        .nav-header { padding: 28px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+        .nav-logo { display: flex; align-items: center; gap: 12px; }
+        .nav-logo-icon {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, var(--v1), var(--v3));
+            background-size: 200% 200%;
+            animation: iridescent 5s ease infinite;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 900; color: #fff;
+            box-shadow: 0 4px 25px rgba(168,85,247,0.4);
+            position: relative; overflow: hidden;
+        }
+        .nav-logo-icon::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
+            animation: logoShine 4s ease-in-out infinite;
+        }
+        @keyframes logoShine { 0%,100% { transform: translateX(-100%); } 50% { transform: translateX(100%); } }
+        @keyframes iridescent {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .nav-logo-text {
+            font-size: 14px; font-weight: 800; letter-spacing: 1.5px;
+            background: linear-gradient(90deg, #fff, var(--lav), var(--v3), #fff);
+            background-size: 250% 100%;
+            animation: iridescent 6s linear infinite;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .nav-logo-sub { font-size: 10px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+
+        .nav-links { flex: 1; overflow-y: auto; padding: 16px 12px; }
+        .nav-links::-webkit-scrollbar { width: 3px; }
+        .nav-links::-webkit-scrollbar-thumb { background: rgba(168,85,247,0.3); border-radius: 2px; }
+
+        .nav-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 14px; margin-bottom: 2px; border-radius: 10px;
+            text-decoration: none; color: var(--text-dim);
+            font-size: 13px; font-weight: 500;
+            transition: all 0.25s ease; position: relative; overflow: hidden;
+        }
+        .nav-link::before {
+            content: ''; position: absolute; left: 0; top: 50%;
+            transform: translateY(-50%) scaleY(0);
+            width: 3px; height: 60%;
+            background: linear-gradient(180deg, var(--v2), var(--v3));
+            border-radius: 0 4px 4px 0;
+            transition: transform 0.25s ease;
+        }
+        .nav-link:hover { background: rgba(168,85,247,0.07); color: var(--text); transform: translateX(3px); }
+        .nav-link.active { background: rgba(168,85,247,0.12); color: var(--lav); font-weight: 600; }
+        .nav-link.active::before { transform: translateY(-50%) scaleY(1); }
+        .nav-link .nav-icon {
+            width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+            background: rgba(168,85,247,0.07); border-radius: 8px; font-size: 14px; flex-shrink: 0;
+            transition: all 0.25s ease;
+        }
+        .nav-link.active .nav-icon {
+            background: linear-gradient(135deg, rgba(168,85,247,0.3), rgba(217,70,239,0.2));
+            box-shadow: 0 0 15px rgba(168,85,247,0.25);
+        }
+        .nav-footer { padding: 16px 24px; border-top: 1px solid var(--border); font-size: 10px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+
+        .nav-toggle {
+            display: none; position: fixed; top: 20px; left: 20px; z-index: 1100;
+            width: 44px; height: 44px;
+            background: rgba(4,2,9,0.95); backdrop-filter: blur(20px);
+            border: 1px solid var(--border-accent); border-radius: 12px; cursor: pointer;
+            align-items: center; justify-content: center; flex-direction: column; gap: 5px;
+        }
+        .nav-toggle span { width: 18px; height: 2px; background: var(--lav); border-radius: 2px; transition: all 0.3s ease; }
+
+        /* === MAIN === */
+        .main-content {
+            margin-left: var(--nav-width);
+            padding: 50px 60px 120px;
+            position: relative; z-index: 1;
+            max-width: calc(var(--nav-width) + 920px);
+        }
+
+        /* === HERO === */
+        .hero {
+            text-align: center; padding: 90px 40px; margin-bottom: 60px;
+            position: relative; border-radius: 28px; overflow: hidden;
+            background: rgba(6,3,14,0.96);
+            border: 1px solid var(--border);
+        }
+        .hero::before {
+            content: ''; position: absolute; inset: -2px;
+            background: conic-gradient(from 0deg, var(--v1), var(--v3), var(--v4), var(--v2), var(--v1));
+            border-radius: 29px; z-index: -2;
+            animation: borderRotate 8s linear infinite;
+            opacity: 0.55;
+        }
+        .hero::after {
+            content: ''; position: absolute; inset: 1px;
+            background: linear-gradient(160deg, rgba(4,2,9,0.98), rgba(12,6,22,0.98));
+            border-radius: 27px; z-index: -1;
+        }
+        @keyframes borderRotate { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+
+        .hero-mirage {
+            position: absolute; inset: 0; z-index: -1; opacity: 0.25;
+            background: repeating-linear-gradient(0deg,
+                transparent 0px, transparent 25px,
+                rgba(196,181,253,0.03) 25px, rgba(196,181,253,0.03) 27px);
+            animation: mirageWave 8s ease-in-out infinite;
+        }
+        @keyframes mirageWave { 0%,100% { transform: skewY(-0.5deg); } 50% { transform: skewY(0.5deg); } }
+
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 20px;
+            background: linear-gradient(90deg, rgba(124,58,237,0.15), rgba(217,70,239,0.1), rgba(124,58,237,0.15));
+            background-size: 200% 100%;
+            animation: iridescent 5s ease infinite;
+            border: 1px solid rgba(196,181,253,0.25);
+            border-radius: 100px;
+            font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--lav); margin-bottom: 24px;
+        }
+        .hero-badge::before {
+            content: ''; width: 6px; height: 6px; background: var(--v2); border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 0 12px var(--v2);
+        }
+        @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.5); } }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.2rem);
+            font-weight: 900; letter-spacing: -2px; line-height: 1.1; margin-bottom: 16px;
+            background: linear-gradient(90deg, #ffffff, var(--lav), var(--v2), var(--v3), var(--v4), #ffffff);
+            background-size: 300% 100%;
+            animation: iridescent 7s linear infinite;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p { font-size: 1.15rem; color: var(--text-dim); font-weight: 300; max-width: 500px; margin: 0 auto; }
+
+        /* === SECTIONS === */
+        .section {
+            margin-bottom: 40px; border-radius: var(--radius);
+            background: var(--bg-card); border: 1px solid var(--border);
+            backdrop-filter: blur(20px); overflow: hidden;
+            transition: all 0.4s ease;
+            opacity: 0; transform: translateY(30px);
+        }
+        .section.visible { opacity: 1; transform: translateY(0); }
+        .section:hover {
+            border-color: rgba(168,85,247,0.25);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 50px rgba(168,85,247,0.07);
+        }
+        .section-header {
+            padding: 28px 36px; display: flex; align-items: center; gap: 18px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(124,58,237,0.06), rgba(217,70,239,0.02));
+            position: relative; overflow: hidden;
+        }
+        .section-header::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(168,85,247,0.4), transparent);
+        }
+        .section-icon {
+            width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;
+            font-size: 24px;
+            background: linear-gradient(135deg, rgba(124,58,237,0.18), rgba(217,70,239,0.08));
+            border: 1px solid rgba(168,85,247,0.15);
+            border-radius: 14px; flex-shrink: 0;
+        }
+        .section-title { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.5px; color: var(--text); }
+        .section-number {
+            margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+            color: var(--text-muted); background: rgba(255,255,255,0.02);
+            padding: 4px 12px; border-radius: 6px; border: 1px solid var(--border);
+        }
+        .section-body { padding: 32px 36px; }
+
+        /* === RULES LIST === */
+        .rules-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .rules-list > li {
+            position: relative; padding: 16px 20px 16px 24px;
+            background: var(--bg-inset); border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem; color: var(--text-dim);
+            transition: all 0.25s ease; line-height: 1.6;
+        }
+        .rules-list > li::before {
+            content: ''; position: absolute; left: 0; top: 50%;
+            transform: translateY(-50%); width: 3px; height: 0%;
+            background: linear-gradient(180deg, var(--v2), var(--v3));
+            border-radius: 0 4px 4px 0; transition: height 0.3s ease;
+        }
+        .rules-list > li:hover {
+            background: rgba(168,85,247,0.04);
+            border-color: rgba(168,85,247,0.2);
+            color: var(--text); transform: translateX(4px);
+        }
+        .rules-list > li:hover::before { height: 60%; }
+        .rules-list > li.new-rule { border-color: rgba(168,85,247,0.3); background: rgba(168,85,247,0.05); }
+        .rules-list > li.new-rule::after {
+            content: 'NEW'; position: absolute; top: 8px; right: 12px;
+            font-size: 9px; font-weight: 800; letter-spacing: 1px; color: #fff;
+            background: linear-gradient(90deg, var(--v1), var(--v3));
+            padding: 2px 8px; border-radius: 4px;
+            box-shadow: 0 0 12px rgba(168,85,247,0.4);
+        }
+
+        /* === SUBSECTION === */
+        .subsection { margin-top: 32px; padding-top: 28px; border-top: 1px solid var(--border); }
+        .subsection:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+        .subsection-title {
+            font-size: 1.05rem; font-weight: 700; margin-bottom: 18px;
+            display: flex; align-items: center; gap: 12px; color: var(--text);
+        }
+        .subsection-title::before {
+            content: ''; width: 10px; height: 10px;
+            background: linear-gradient(135deg, var(--v2), var(--v3));
+            border-radius: 3px; transform: rotate(45deg); flex-shrink: 0;
+            box-shadow: 0 0 12px rgba(168,85,247,0.4);
+        }
+
+        /* === TABLES === */
+        .table-wrap { overflow-x: auto; margin: 18px 0; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        thead { background: linear-gradient(90deg, rgba(124,58,237,0.14), rgba(217,70,239,0.06)); }
+        th {
+            padding: 14px 20px; text-align: left; font-weight: 700; font-size: 0.75rem;
+            text-transform: uppercase; letter-spacing: 1.5px; color: var(--lav);
+            border-bottom: 1px solid var(--border);
+        }
+        td { padding: 13px 20px; border-bottom: 1px solid rgba(168,85,247,0.05); color: var(--text-dim); }
+        tbody tr { transition: background 0.2s ease; }
+        tbody tr:hover { background: rgba(168,85,247,0.04); }
+        tbody tr:last-child td { border-bottom: none; }
+
+        /* === TAGS === */
+        .tag { display: inline-block; padding: 3px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+        .tag-red { background: rgba(251,113,133,0.12); color: #fda4af; border: 1px solid rgba(251,113,133,0.25); }
+        .tag-blue { background: rgba(34,211,238,0.1); color: #a5f3fc; border: 1px solid rgba(34,211,238,0.2); }
+        .tag-yellow { background: rgba(168,85,247,0.15); color: var(--lav); border: 1px solid rgba(168,85,247,0.3); }
+
+        /* === COMBO === */
+        .combo-list { display: flex; flex-direction: column; gap: 8px; }
+        .combo-item {
+            display: flex; align-items: center; gap: 14px; padding: 13px 18px;
+            background: rgba(251,113,133,0.03); border: 1px solid rgba(251,113,133,0.08);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem; font-family: 'JetBrains Mono', monospace; color: var(--text-dim);
+            transition: all 0.2s ease;
+        }
+        .combo-item:hover { border-color: rgba(251,113,133,0.2); background: rgba(251,113,133,0.06); transform: translateX(3px); }
+        .combo-x {
+            width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+            background: rgba(251,113,133,0.15); border-radius: 6px; color: var(--red);
+            font-weight: 800; font-size: 12px; flex-shrink: 0;
+        }
+
+        /* === CHIPS === */
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+        .chip {
+            padding: 7px 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--border);
+            border-radius: 8px; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace;
+            color: var(--text-dim); transition: all 0.2s ease;
+        }
+        .chip:hover { border-color: rgba(168,85,247,0.35); background: rgba(168,85,247,0.07); color: var(--text); transform: translateY(-2px); }
+        .chip-banned { background: rgba(251,113,133,0.05); border-color: rgba(251,113,133,0.15); color: #fda4af; }
+        .chip-banned:hover { border-color: rgba(251,113,133,0.35); background: rgba(251,113,133,0.1); }
+        .chip-violet {
+            background: linear-gradient(90deg, rgba(124,58,237,0.12), rgba(217,70,239,0.1), rgba(124,58,237,0.12));
+            background-size: 200% 100%;
+            animation: iridescent 6s ease infinite;
+            border-color: rgba(168,85,247,0.3); color: var(--lav);
+        }
+        .chip-violet:hover { border-color: rgba(196,181,253,0.5); box-shadow: 0 0 20px rgba(168,85,247,0.2); }
+
+        /* === FLOW === */
+        .flow-list { display: flex; flex-direction: column; gap: 10px; }
+        .flow-item {
+            padding: 18px 22px; background: var(--bg-inset); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); transition: all 0.25s ease;
+        }
+        .flow-item:hover { border-color: rgba(168,85,247,0.25); background: rgba(168,85,247,0.04); }
+        .flow-item.new-rule { border-color: rgba(168,85,247,0.35); background: rgba(168,85,247,0.05); }
+        .flow-item.new-rule .flow-name::after {
+            content: ' NEW'; font-size: 9px; color: #fff;
+            background: linear-gradient(90deg, var(--v1), var(--v3));
+            padding: 1px 6px; border-radius: 3px; margin-left: 8px; letter-spacing: 1px;
+        }
+        .flow-name {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600;
+            margin-bottom: 6px;
+            background: linear-gradient(90deg, var(--lav), var(--v3));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .flow-rule { font-size: 0.85rem; color: var(--text-dim); }
+
+        /* === NOTES === */
+        .note { padding: 18px 22px; border-radius: var(--radius-sm); font-size: 0.88rem; margin: 18px 0; line-height: 1.6; position: relative; overflow: hidden; }
+        .note::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+        .note-warn { background: rgba(168,85,247,0.07); border: 1px solid rgba(168,85,247,0.2); color: var(--lav); }
+        .note-warn::before { background: linear-gradient(180deg, var(--v2), var(--v3)); }
+        .note-danger { background: rgba(251,113,133,0.05); border: 1px solid rgba(251,113,133,0.15); color: #fda4af; }
+        .note-danger::before { background: var(--red); }
+
+        /* === STYLE CARDS === */
+        .style-card {
+            margin-bottom: 20px; padding: 26px;
+            background: var(--bg-inset); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); transition: all 0.3s ease; position: relative;
+        }
+        .style-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--v2), var(--v3), transparent);
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .style-card:hover { border-color: rgba(168,85,247,0.25); box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
+        .style-card:hover::before { opacity: 1; }
+        .style-card.updated { border-color: rgba(168,85,247,0.3); }
+        .style-card.updated .style-card-name::after {
+            content: 'UPDATED'; font-size: 9px; color: #fff;
+            background: linear-gradient(90deg, var(--v1), var(--v3));
+            padding: 2px 8px; border-radius: 4px; margin-left: 12px; letter-spacing: 1px;
+            font-family: 'Inter', sans-serif;
+        }
+        .style-card-name {
+            font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-weight: 700; color: var(--text);
+            margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .style-card-name::before {
+            content: ''; width: 4px; height: 22px;
+            background: linear-gradient(180deg, var(--v2), var(--v3));
+            border-radius: 4px; flex-shrink: 0;
+            box-shadow: 0 0 14px rgba(168,85,247,0.5);
+        }
+        .style-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .style-card ul li {
+            font-size: 0.85rem; color: var(--text-dim); padding: 10px 14px;
+            background: rgba(0,0,0,0.4); border-radius: 8px;
+            border-left: 2px solid rgba(168,85,247,0.25);
+            transition: all 0.2s ease; line-height: 1.5;
+        }
+        .style-card ul li:hover { border-left-color: var(--v2); background: rgba(168,85,247,0.05); color: var(--text); }
+        .style-card ul li.new-item { border-left-color: var(--v3); background: rgba(168,85,247,0.06); }
+        .style-card ul li.new-item::after {
+            content: ' NEW'; font-size: 9px; color: #fff;
+            background: linear-gradient(90deg, var(--v1), var(--v3));
+            padding: 1px 6px; border-radius: 3px; margin-left: 8px; letter-spacing: 1px;
+        }
+
+        /* === FOOTER === */
+        .footer { text-align: center; padding: 50px 20px; margin-top: 60px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.82rem; position: relative; }
+        .footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(168,85,247,0.4), transparent); }
+        .footer strong {
+            background: linear-gradient(90deg, var(--lav), var(--v3));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .scroll-top {
+            position: fixed; bottom: 30px; right: 30px; width: 48px; height: 48px;
+            background: linear-gradient(135deg, var(--v1), var(--v3));
+            background-size: 200% 200%; animation: iridescent 4s ease infinite;
+            color: #fff; border: none; border-radius: 14px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
+            z-index: 100; opacity: 0; transform: translateY(20px); transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(168,85,247,0.4);
+        }
+        .scroll-top.visible { opacity: 1; transform: translateY(0); }
+        .scroll-top:hover { transform: translateY(-4px); box-shadow: 0 12px 35px rgba(168,85,247,0.55); }
+
+        @media (max-width: 1024px) {
+            .nav-sidebar { transform: translateX(-100%); }
+            .nav-sidebar.open { transform: translateX(0); }
+            .nav-toggle { display: flex; }
+            .main-content { margin-left: 0; padding: 30px 20px 80px; padding-top: 80px; }
+        }
+        @media (max-width: 640px) {
+            .section-body { padding: 22px 20px; }
+            .section-header { padding: 22px 20px; }
+            .hero { padding: 50px 24px; }
+        }
+        .nav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 999; backdrop-filter: blur(4px); }
+        .nav-overlay.show { display: block; }
+    </style>
+</head>
+<body>
+    <div class="bg-effects"></div>
+    <div class="heat-shimmer"></div>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <nav class="nav-sidebar" id="navSidebar">
+        <div class="nav-header">
+            <div class="nav-logo">
+                <div class="nav-logo-icon">ML</div>
+                <div>
+                    <div class="nav-logo-text">MIRAGE LEAGUE</div>
+                    <div class="nav-logo-sub">Правила игры</div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-links">
+            <a href="#general" class="nav-link"><span class="nav-icon">📘</span> Общее положение</a>
+            <a href="#matches" class="nav-link"><span class="nav-icon">🎮</span> Информация о матчах</a>
+            <a href="#promotions" class="nav-link"><span class="nav-icon">🏆</span> Повышения</a>
+            <a href="#signings" class="nav-link"><span class="nav-icon">🤝</span> Подписания и merc</a>
+            <a href="#behavior" class="nav-link"><span class="nav-icon">🗣</span> Поведение</a>
+            <a href="#forbidden" class="nav-link"><span class="nav-icon">⛔</span> Запрещено</a>
+            <a href="#golden-goal" class="nav-link"><span class="nav-icon">🥇</span> Golden Goal</a>
+            <a href="#style-restrictions" class="nav-link"><span class="nav-icon">🎨</span> Запреты на стили</a>
+            <a href="#flow-restrictions" class="nav-link"><span class="nav-icon">🌊</span> Ограничения потоков</a>
+            <a href="#steals" class="nav-link"><span class="nav-icon">🛡</span> Отборы</a>
+            <a href="#style-rules" class="nav-link"><span class="nav-icon">📕</span> Правила по стилям</a>
+        </div>
+        <div class="nav-footer">Mirage League © 2026</div>
+    </nav>
+
+    <button class="scroll-top" id="scrollTop" aria-label="Scroll to top">↑</button>
+
+    <main class="main-content">
+        <header class="hero">
+            <div class="hero-mirage"></div>
+            <div class="hero-badge">Official Ruleset</div>
+            <h1>Правила игры</h1>
+            <p>Официальный регламент скримов и матчей Mirage League</p>
+        </header>
+
+        <!-- 01 -->
+        <section class="section" id="general">
+            <div class="section-header"><div class="section-icon">📘</div><div class="section-title">Общее положение</div><div class="section-number">01</div></div>
+            <div class="section-body">
+                <ul class="rules-list">
+                    <li>Правила могут быть изменены в любой момент. Все участники будут уведомлены.</li>
+                    <li>Правила применяются ко всем матчам, закинутым в канале матчей на официальном сервере Mirage League.</li>
+                    <li>Запрещено играть в клубе, если у вас нет роли этого клуба на сервере Mirage League.</li>
+                    <li>Чтобы играть скримы и регистрировать клуб, аккаунт должен быть зарегистрирован в Discord минимум 1 неделю.</li>
+                    <li>Запрещено использование программ и утилит, дающих преимущество.</li>
+                    <li>Запрещено использовать макрос.</li>
+                    <li>Если произошло нарушение — игра не останавливается, разбираемся после окончания матча.</li>
+                    <li>Запрещено использовать эмоции для получения преимущества (пример: эмоция дракона возле вражеского Goalkeeper).</li>
+                    <li>Скины, связанные с политикой, нацистской символикой и розжигом ненависти — запрещены.</li>
+                    <li>Если в течение 2 дней команда игнорирует запрос о скриме, на 3 день она обязана сыграть его, иначе получает ТП.</li>
+                    <li>За незнание правил выдаётся warn.</li>
+                    <li>Абьюз очевиднейших правил, о которых не написано в правилах — наказуем.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 02 -->
+        <section class="section" id="matches">
+            <div class="section-header"><div class="section-icon">🎮</div><div class="section-title">Информация о матчах</div><div class="section-number">02</div></div>
+            <div class="section-body">
+                <ul class="rules-list">
+                    <li>Матч должен начаться не позже чем через 15 минут обусловленного времени — иначе можно засчитать победу, если соперники не предупредили об отмене/переносе за 15 минут.</li>
+                    <li>Формат — First To 3. Счёт идёт по таймам.</li>
+                    <li>Владельцы приватного сервера играют первый тайм за Away, гости — за Home.</li>
+                    <li>Трибуна обязательно должна проходить на приватном сервере рефери/оратора.</li>
+                    <li>После двух таймов команда, игравшая не на своём сервере, имеет право запросить свап приватного сервера.</li>
+                    <li>Если правила добавили во время игры — доигрываете матч, не опираясь на добавленные правила.</li>
+                    <li>Если команда без места в топе или T15–T11 против Т3+ проигрывает 5-0 в первом тайме — автоматически проигрывает 3-0 (по желанию победителей можно продолжить).</li>
+                    <li class="new-rule">Запрещено брать тайм-аут после 1-го тайма. Исключение: если игроку нужно срочно покинуть матч и ожидается новый игрок, либо другие технические проблемы.</li>
+                </ul>
+
+                <div class="subsection">
+                    <div class="subsection-title">Free Goal vs Turnover</div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Ситуация</th><th>Решение</th></tr></thead>
+                            <tbody>
+                                <tr><td>Влияет на счёт</td><td><span class="tag tag-red">Free Goal</span></td></tr>
+                                <tr><td>Не влияет на счёт</td><td><span class="tag tag-blue">Turnover</span></td></tr>
+                                <tr><td>Не влияет на счёт, но мяч не отдают долгое время</td><td><span class="tag tag-red">Free Goal</span></td></tr>
+                                <tr><td>Мяч вообще не отдают или Free Goal не дают</td><td><span class="tag tag-yellow">Переигровка / ТП тайма</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <ul class="rules-list">
+                        <li>После Free Goal те, кто его забил, должны производить Kickoff.</li>
+                        <li>Turnover отдаётся тому, у кого забрали мяч при нарушении.</li>
+                        <li>Если нарушаете трижды правила с Turnover за игру — получаете Free Goal. Следующие нарушения также приравниваются к Free Goal.</li>
+                        <li>Отказ подтверждать игру при победе другой команды с откатами — warn.</li>
+                        <li>Обман следящего за форматом («не было скрима» и т.п.) — warn.</li>
+                    </ul>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title">Позиции для скримов</div>
+                    <ul class="rules-list">
+                        <li>Defensive Winger может находиться на позиции нижнего вингера.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 03 -->
+        <section class="section" id="promotions">
+            <div class="section-header"><div class="section-icon">🏆</div><div class="section-title">Повышения</div><div class="section-number">03</div></div>
+            <div class="section-body">
+                <ul class="rules-list">
+                    <li>Выигрываете команду от до Т5 — занимаете место этой команды.</li>
+                    <li>Чтобы занять место команды Т1–Т3, нужно выиграть её со счётом 3-0 по таймам либо выиграть дважды. Между скримами — минимум 24 часа.</li>
+                    <li>Если команда Т1–Т3 играет против Т1–Т3 — достаточно выиграть 1 раз.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 04 -->
+        <section class="section" id="signings">
+            <div class="section-header"><div class="section-icon">🤝</div><div class="section-title">Подписания и merc-игроки</div><div class="section-number">04</div></div>
+            <div class="section-body">
+                <ul class="rules-list">
+                    <li>Merc-игрок: приглашение возможно только с согласия владельцев/капитанов обеих команд. Если ваша команда разрешила сопернику merc — вы можете пригласить своего без доп. согласия.</li>
+                    <li>Позиция merc: обязан играть на заявленной позиции. Смена позиции во время игры — весь текущий лег аннулируется. Исключения: Central Forward / Offensive Winger.</li>
+                    <li>Cooldown и ранг-матчи: если модератор по ошибке подтвердил подписания во время кулдауна — команды не имеют права.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 05 -->
+        <section class="section" id="behavior">
+            <div class="section-header"><div class="section-icon">🗣</div><div class="section-title">Поведение во время скримов</div><div class="section-number">05</div></div>
+            <div class="section-body">
+                <ul class="rules-list">
+                    <li>Прямые/косвенные оскорбления, переход на личности, провокация на конфликт и участие в нём — warn.</li>
+                    <li>Во время трибун разрешён Trash Talk.</li>
+                    <li>Дискриминация, расизм, оскорбление религии и токсичность в любом виде — запрещены.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 06 -->
+        <section class="section" id="forbidden">
+            <div class="section-header"><div class="section-icon">⛔</div><div class="section-title">Запрещено</div><div class="section-number">06</div></div>
+            <div class="section-body">
+                <ul class="rules-list">
+                    <li>Одинаковые стили (исключение: Goalkeeper).</li>
+                    <li>Более 1-го World Class в команде.</li>
+                    <li>Goalkeeper использовать отбор.</li>
+                    <li>Любые баги (абьюз способностей и т.д.).</li>
+                    <li>Более 3 человек в боксе и более 2 в мини-боксе (Goalkeeper в счёт).</li>
+                    <li>Заступ за красную линию = 3 GT. Наступать на линию можно, пересекать — нельзя. Подкат с пересечением — нарушение. Если в мини-боксе Goalkeeper и Central Midfielder — третий не имеет права заходить за линию.</li>
+                    <li>Прыгать в мини-боксе более 3 раз за атаку оппонента.</li>
+                    <li>Костюмы, скрывающие форму игрока.</li>
+                    <li>Перезаходы без весомой причины.</li>
+                    <li>Разрешено делать 1 замену за тайм — с тем же стилем, что и заменённый.</li>
+                    <li>Баги по типу Tab Glitch — Free Goal.</li>
+                    <li>Отбор слайдом в мини-боксе.</li>
+                    <li>Прожимать Awakening на стилях, которые могут использовать его без мяча, ради гола.</li>
+                    <li>Бить в ворота Awakening Cut-сценами. Если у Goalkeeper есть анимация удара — он должен дать откат.</li>
+                    <li>Любой вид TP шотов.</li>
+                </ul>
+
+                <div class="subsection">
+                    <div class="subsection-title">TP Shot — когда это НЕ Free Goal</div>
+                    <ul class="rules-list">
+                        <li>У Goalkeeper не было Dive (Q), и он позади бьющего.</li>
+                        <li>Сделаны Fake Indi + TP Shot вместе, Goalkeeper использовал Dive (Q) в сторону индикатора.</li>
+                        <li>Удар во время Awakening Lag, но Goalkeeper был вне бокса и не мог поймать мяч.</li>
+                        <li>Goalkeeper использовал Front Dive, а бьющий обошёл его через Accelerate (V) и сразу ударил.</li>
+                    </ul>
+                    <div class="note note-warn">Эти правила не работают, если Goalkeeper всё ещё в мини-боксе либо если в мини-боксе есть Goaltending.</div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title">Прочие запреты</div>
+                    <ul class="rules-list">
+                        <li>Не отдавать Free Goal, если мяч вылетел из ворот или тепнулся в центр карты.</li>
+                        <li>Бить в мини-боксе.</li>
+                        <li>Забирать мяч при M1 Bug (ждать 3 секунды, иначе вернуть мяч).</li>
+                        <li>Менять стили/потоки во время игры.</li>
+                        <li>Одинаковые/похожие скины.</li>
+                        <li>Time Waste от 20 секунд.</li>
+                        <li>Двигаться во время анимаций, голкиперу выходить из бокса.</li>
+                        <li>Фарм потока во время пауз — Free Goal.</li>
+                        <li>Fast Mode в атаке. При подозрениях — иметь откат без Fast Mode.</li>
+                        <li>Если до конца тайма ≤10 секунд — можно нарушить правило при очевидной победе (разница 2+ гола).</li>
+                        <li>Goalkeeper с >3 аксессуаров — обязан снять по просьбе из-за лагов.</li>
+                        <li>При подозрении на лагболлы — PC чекер/оратор может запросить Performance Stats или демонстрацию экрана. При большом Sent — обязаны пройти PC чек.</li>
+                        <li>После паса любого вида — запрещено сразу использовать способность удара.</li>
+                        <li>Если игрок с мячом не может двигаться — отбирать запрещено (фарм потока). Игра приостанавливается до разбага.</li>
+                        <li>Забирать мяч из вражеского мини-бокса.</li>
+                        <li>Забирать мяч в M2 Баг.</li>
+                        <li>Movestack в виде любого шота.</li>
+                        <li>Во время лага при Awakening — запрещено отбирать и забивать.</li>
+                        <li class="new-rule">Разрешено 2 PP-стиля в поле при условии, что один из них не даёт PP — ибо Turnover. Пример: [ Charles ] + [ Sae ] — Charles даёт PP, Sae нет / Sae даёт PP — Turnover. Точно так же работает со всеми стилями.</li>
+                        <li class="new-rule">Запрещено использовать PP на Goalkeeper.</li>
+                        <li>Стили/потоки, не полученные обычным способом или на ивентах. Любое вмешательство админ-правами — строго запрещено.</li>
+                        <li>Скины на мяч. Гол со скином на мяч — Free Goal + Turn в Kick-Off.</li>
+                        <li>Не успели использовать способности с лимитом в основное время — количество остаётся в овертайме.</li>
+                        <li>2 Awakening за тайм — запрещено.</li>
+                        <li>Способность на Central Midfielder, обездвиживающая/оглушающая с первой линии (по углам можно) — запрещена.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 07 -->
+        <section class="section" id="golden-goal">
+            <div class="section-header"><div class="section-icon">🥇</div><div class="section-title">Golden Goal</div><div class="section-number">07</div></div>
+            <div class="section-body">
+                <ul class="rules-list">
+                    <li>Все отборы с лимитом — только 1 раз.</li>
+                    <li>Merc-игроки на Golden Goal разрешены.</li>
+                    <li>После захода сразу пропускаете таймер. Игра до первого гола.</li>
+                    <li>Смена стилей во время Golden Goal запрещена.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 08 -->
+        <section class="section" id="style-restrictions">
+            <div class="section-header"><div class="section-icon">🎨</div><div class="section-title">Запреты и ограничения на стили</div><div class="section-number">08</div></div>
+            <div class="section-body">
+                <div class="subsection">
+                    <div class="subsection-title">Запрещённая косметика</div>
+                    <div class="chips">
+                        <span class="chip chip-banned">Chibi Don Lorenzo</span>
+                        <span class="chip chip-banned">Косметика/скины, скрывающие мяч/персонажа</span>
+                        <span class="chip chip-banned">NEL Rin Domain</span>
+                        <span class="chip chip-banned">Химические реакции</span>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title">World Class — особые случаи</div>
+                    <ul class="rules-list">
+                        <li>[ NEL Isagi ] и [ Don Lorenzo ] не считаются за World Class. В 1 команде — 1 World Class.</li>
+                        <li>[ Phantom Isagi ] не считается за World Class. С [ Don Lorenzo ] — 1 World Class.</li>
+                        <li class="new-rule">[ Don Lorenzo ] считается за World Class. Не сочетается с [ Aiku ]. На DW допускается.</li>
+                    </ul>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title">Запрещено иметь в одной команде</div>
+                    <div class="combo-list">
+                        <div class="combo-item"><span class="combo-x">✕</span>[ NEL Isagi ] + [ Phantom Isagi ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ Chigiri ] + [ NEL Chigiri ] (искл.: [ Chigiri ] Goalkeeper)</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ Chigiri ] + [ Loki ] (искл.: [ Chigiri ] Goalkeeper)</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ NEL Chigiri ] + [ Loki ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ Igaguri ] + [ Aiku ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ Igaguri ] + [ Don Lorenzo ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ Kurona ] + [ Charles ] / [ Sae ] / [ Reaper Sae ] / [ Ness ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ Ness ] + [ Charles ] / [ Sae ] / [ Reaper Sae ] / [ Hiori ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ Nagi ] + [ NEL Nagi ] / [ Skeleton Nagi ] / [ Easter Yukimiya ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ NEL Nagi ] + [ Skeleton Nagi ] / [ Easter Yukimiya ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ Skeleton Nagi ] + [ Easter Yukimiya ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ Hiori ] + [ Charles ] / [ Sae ] / [ Reaper Sae ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ Bachira ] + [ NEL Bachira ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ Reo ] + [ Loki ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ Aiku ] + [ Don Lorenzo ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ Rin ] + [ NEL Rin ] / [ Bloodmoon Rin ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ NEL Rin ] + [ Bloodmoon Rin ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ Charles ] + [ Sae ] / [ Reaper Sae ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ Sae ] + [ Reaper Sae ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ Kaiser ] + [ Elf Emperor ]</div>
+                        <div class="combo-item"><span class="combo-x">✕</span>[ Loki ] + [ Subzero Loki ]</div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title">Стили, которые запрещены</div>
+                    <div class="chips">
+                        <span class="chip chip-banned">[ NEL Chigiri ]</span>
+                        <span class="chip chip-banned">[ NEL Nagi ]</span>
+                        <span class="chip chip-banned">[ NEL Shidou ]</span>
+                        <span class="chip chip-banned">[ McNagi Fryshiro ]</span>
+                        <span class="chip chip-banned">[ Bunny ]</span>
+                        <span class="chip chip-banned">[ Loki ]</span>
+                        <span class="chip chip-banned">[ Lavinho ]</span>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title">Считаются за 1 World Class</div>
+                    <div class="chips">
+                        <span class="chip chip-violet">[ Skeleton Nagi ]</span>
+                        <span class="chip chip-violet">[ Krampus Barou ]</span>
+                        <span class="chip chip-violet">[ Demon Shidou ]</span>
+                        <span class="chip chip-violet">[ Bloodmoon Rin ]</span>
+                        <span class="chip chip-violet">[ NEL Rin ]</span>
+                        <span class="chip chip-violet">[ Reaper Sae ]</span>
+                        <span class="chip chip-violet">[ Kaiser ]</span>
+                        <span class="chip chip-violet">[ Elf Emperor ]</span>
+                        <span class="chip chip-violet">[ Santa Lavinho ]</span>
+                        <span class="chip chip-violet">[ Don Lorenzo ]</span>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title">Запрещены на Goalkeeper</div>
+                    <div class="chips">
+                        <span class="chip chip-banned">[ Igaguri ]</span>
+                        <span class="chip chip-banned">[ Raichi ]</span>
+                        <span class="chip chip-banned">[ Karasu ]</span>
+                        <span class="chip chip-banned">[ Nagi ]</span>
+                        <span class="chip chip-banned">[ Reo ]</span>
+                        <span class="chip chip-banned">[ Aiku ]</span>
+                        <span class="chip chip-banned">[ Rin ]</span>
+                        <span class="chip chip-banned">[ Don Lorenzo ]</span>
+                        <span class="chip chip-banned">все World Class стили</span>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title">Правила комбинирования стилей</div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Комбинация</th><th>Правило</th></tr></thead>
+                            <tbody>
+                                <tr><td>[ Isagi ] / [ NEL Isagi ]</td><td>Можно комбинировать все способности; правило NEL Isagi + Don Lorenzo распространяется на гибрид; гибрид = 0 World Class.</td></tr>
+                                <tr><td>[ Chigiri ] / [ NEL Chigiri ]</td><td>Комбинировать запрещено; гибрид полностью запрещён.</td></tr>
+                                <tr><td>[ Nagi ] / [ NEL Nagi ]</td><td>Комбинировать запрещено; гибрид полностью запрещён.</td></tr>
+                                <tr><td>[ Bachira ] / [ NEL Bachira ]</td><td>Можно комбинировать все способности; гибрид = 0 World Class.</td></tr>
+                                <tr><td>[ Shidou ] / [ Demon Shidou ]</td><td>Комбинировать запрещено; гибрид полностью запрещён.</td></tr>
+                                <tr><td>[ Reo ] / [ NEL Reo ]</td><td>Можно комбинировать все способности, кроме гибрида Awakening. Chameleon Defense (B) = 1 World Class.</td></tr>
+                                <tr><td>[ Rin ] / [ NEL Rin ]</td><td>Можно комбинировать все способности; гибрид = 1 World Class.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 09 -->
+        <section class="section" id="flow-restrictions">
+            <div class="section-header"><div class="section-icon">🌊</div><div class="section-title">Ограничения на потоки</div><div class="section-number">09</div></div>
+            <div class="section-body">
+                <div class="flow-list">
+                    <div class="flow-item"><div class="flow-name">[ Awakened Genius ] / [ Genius ]</div><div class="flow-rule">Разрешено 1 на команду.</div></div>
+                    <div class="flow-item"><div class="flow-name">[ Awakened Genius ] + [ Genius ]</div><div class="flow-rule">Запрещено.</div></div>
+                    <div class="flow-item"><div class="flow-name">[ Awakened Genius ] + [ Magician Flow ]</div><div class="flow-rule">Запрещено.</div></div>
+                    <div class="flow-item"><div class="flow-name">[ Awakened Genius ] + [ Contrarian ]</div><div class="flow-rule">Запрещено.</div></div>
+                    <div class="flow-item"><div class="flow-name">[ Awakened Genius ]</div><div class="flow-rule">Запрещён пас на того, кто в вражеском боксе. Запрещён M2 пас на тиммейта не с вашей половины поля.</div></div>
+                    <div class="flow-item new-rule"><div class="flow-name">[ Awakened Genius ] → PP на [ Demon King ]</div><div class="flow-rule">Запрещено потоком Awakened Genius давать PP на Demon King, если он находится в потоке.</div></div>
+                    <div class="flow-item"><div class="flow-name">[ Magician Flow ]</div><div class="flow-rule">1 на команду. Запрещён пас на того, кто в вражеском боксе. Запрещён со стилями с пасом. Запрещён M2 пас на тиммейта не с вашей половины.</div></div>
+                    <div class="flow-item"><div class="flow-name">[ Contrarian ]</div><div class="flow-rule">2 на команду. Запрещён M2 пас на тиммейта не с вашей половины.</div></div>
+                    <div class="flow-item"><div class="flow-name">[ Magician Flow ] + [ Contrarian ]</div><div class="flow-rule">Запрещено.</div></div>
+                    <div class="flow-item"><div class="flow-name">[ Demon King ]</div><div class="flow-rule">Только один среди Central Forward / Offensive Winger / Defensive Winger (Goalkeeper и CM — без ограничений).</div></div>
+                    <div class="flow-item"><div class="flow-name">[ Target men ]</div><div class="flow-rule">Только один среди CF/OW/DW (GK и CM — без ограничений). Запрещён Volley во вражеском боксе.</div></div>
+                    <div class="flow-item"><div class="flow-name">[ Demon King ] + [ Target men ]</div><div class="flow-rule">Запрещено в нападении.</div></div>
+                    <div class="flow-item new-rule"><div class="flow-name">[ Demon King ] + [ Target men ] / [ Demon King ] + [ Demon King ] / [ Target men ] + [ Target men ]</div><div class="flow-rule">Запрещено использовать, если эти потоки используют 2 атакующих (CF + OW). Если DW выходит в атаку и забивает одним из потоков в этих связках, то он считается как OW — это Free Goal. Бить можно на DW только без потока (если M1) либо с ударных способностей по типу Power Shot.</div></div>
+                    <div class="flow-item"><div class="flow-name">[ Destructive Impulse ]</div><div class="flow-rule">Только 1 в атаке и 1 в защите одновременно. Запрещено бить в боксе, запрещено с ударными способностями.</div></div>
+                    <div class="flow-item"><div class="flow-name">[ Singularity ]</div><div class="flow-rule">1 на команду.</div></div>
+                    <div class="flow-item"><div class="flow-name">[ Butterfly Dancer ]</div><div class="flow-rule">1 на команду.</div></div>
+                    <div class="flow-item"><div class="flow-name">[ Godspeed ]</div><div class="flow-rule">1 на команду. Запрещён на [ Reo ], [ Aiku ] (искл.: если нет [ Reo ]) и [ Charles ].</div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10 -->
+        <section class="section" id="steals">
+            <div class="section-header"><div class="section-icon">🛡</div><div class="section-title">Отборы (Major / Minor)</div><div class="section-number">10</div></div>
+            <div class="section-body">
+                <div class="note note-danger">
+                    Запрещено в одной команде для отбора: [ Nagi ] — Defensive Trap (C), [ NEL Nagi ] — Defensive Skull Trap (C), [ Skeleton Nagi ] — Defensive Skeleton Trap (C), [ NEL Reo ] — Chameleon Defense (V), другие скопированные из списка, [ Subzero Loki ] — Godspeed Freeze (V). Разрешено 2 стиля с Major отборами и 1 стиль с Minor отбором в одной команде. Больше — запрещено.
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title">Major отборы</div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Стиль</th><th>Способности</th></tr></thead>
+                            <tbody>
+                                <tr><td>[ Igaguri ]</td><td>Malicia (C)</td></tr>
+                                <tr><td>[ Kurona ]</td><td>Shark Steal (V)</td></tr>
+                                <tr><td>[ Raichi ]</td><td>Stoppage (C), Disruption (V)</td></tr>
+                                <tr><td>[ Ness ]</td><td>Mirror Shield (C), Weapon Disabler (V)</td></tr>
+                                <tr><td>[ Hiori ]</td><td>Absolute Zero Defense (V)</td></tr>
+                                <tr><td>[ King ]</td><td>Lion Steal (C)</td></tr>
+                                <tr><td>[ Reo ]</td><td>Camouflage/Stealth Step (V), Chameleon Defense (B)</td></tr>
+                                <tr><td>[ Aiku ]</td><td>Force Defense (C), Total Clearance (V), Snake Interception (V)</td></tr>
+                                <tr><td>[ Blood Moon Rin ]</td><td>Lunar Axis (V)</td></tr>
+                                <tr><td>[ Charles ]</td><td>Contrainian Defense (B)</td></tr>
+                                <tr><td>[ Kunigami ]</td><td>Crushing Header (C), Body Block (V)</td></tr>
+                                <tr><td>[ Sae ]</td><td>Off Balance (C)</td></tr>
+                                <tr><td>[ Reaper Sae ]</td><td>Scythe Slam (V)</td></tr>
+                                <tr><td>[ Kaiser ]</td><td>Emperor's Route (V)</td></tr>
+                                <tr><td>[ Don Lorenzo ]</td><td>Zombie Steal (V), Golden Defense (B)</td></tr>
+                                <tr><td>[ Subzero Loki ]</td><td>Godspeed Freeze (V)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title">Minor отборы</div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Стиль</th><th>Способности</th></tr></thead>
+                            <tbody>
+                                <tr><td>[ Otoya ]</td><td>Stealthy Steps (C)</td></tr>
+                                <tr><td>[ Karasu ]</td><td>Crow Deflect (C)</td></tr>
+                                <tr><td>[ Kiyora ]</td><td>Twister Pass (V)</td></tr>
+                                <tr><td>[ NEL Bachira ]</td><td>Roulette Steal (C)</td></tr>
+                                <tr><td>[ Shidou ]</td><td>Demon Drive (V)</td></tr>
+                                <tr><td>[ Rin ] / [ NEL Rin ]</td><td>Center of Gravity (C)</td></tr>
+                                <tr><td>[ Easter Yukimiya ]</td><td>Hat Steal (V)</td></tr>
+                                <tr><td>[ Santa Lavinho ]</td><td>Sleigh Ride (V), Christmas Stampede (B)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title">Где можно использовать отборы</div>
+                    <ul class="rules-list">
+                        <li>Major — запрещено на половине поля оппонента (даже если начали на своей).</li>
+                        <li>Minor — везде, кроме вражеского бокса. Без ограничений.</li>
+                        <li>Awakening — разрешены на вражеской половине (искл.: [ Aiku ], способности [ Reo ] в воздухе).</li>
+                        <li>Awakening отборы запрещены в любом боксе (искл.: [ Gagamaru ]).</li>
+                        <li>Awakening отборы — не больше 1 раза за тайм (искл.: CM, GK при [ Gagamaru ]).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 11 -->
+        <section class="section" id="style-rules">
+            <div class="section-header"><div class="section-icon">📕</div><div class="section-title">Правила по стилям</div><div class="section-number">11</div></div>
+            <div class="section-body">
+                <div class="style-card"><div class="style-card-name">[ NEL Isagi ]</div><ul><li>Direct Shot (C) — запрещён во вражеском боксе.</li><li>Sky Direct Shot (C) — запрещён.</li><li>Omnivision (C) — запрещён с потоком на скорость.</li><li>Meta-Burst Point (V) — запрещён во вражеском боксе и залетать в него.</li><li>Side Step Dribble (B) — запрещён во вражеском боксе / залетать.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Phantom Isagi ]</div><ul><li>Phantom Direct Shot (C) — запрещён во вражеском боксе.</li><li>Phantom Dribble (V) — можно залетать в бокс, но использовать в боксе запрещено.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Gagamaru ]</div><ul><li>Gagatech (Scorpion (C)) — только 2 раза за тайм + 1 в овертайме на стилях: Isagi, NEL Isagi, Otoya, Kiyora, Bachira, NEL Bachira, King, Shidou, NEL Rin, Yukimiya, Kunigami, Sae, Kaiser, Elf Emperor. На остальные — без лимита.</li><li>Fast Reaction (V) + [ Godspeed ] — запрещено.</li><li>Lag Avatar запрещён. При лагах во время Fast Reaction (V) — обязаны снять аксессуары. Иначе ТП тайма или переигровка.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Chigiri ]</div><ul><li>Speedster (C) + [ Godspeed ] — запрещено.</li><li>Запрещено бить на линии мини-бокса сразу после Accelerate (V).</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Igaguri ]</div><ul><li>Только на позиции Central Midfielder.</li><li>Запрещено использовать скиллы при потоке с уменьшением Cooldown. Искл.: [ Emperor ].</li><li>Malicia (C) — в своём мини-боксе только 2 раза за тайм.</li><li>Monk Pass (V) — во вражеский бокс / из него запрещено. Только с тиммейтом на вашей половине.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Kurona ]</div><ul><li>OneTwo (C) — во вражеский бокс / из него запрещено. Только с тиммейтом на вашей половине.</li><li>Shark Steal (V) — только 4 раза за тайм + 1 в овертайме.</li></ul></div>
+
+                <div class="style-card updated"><div class="style-card-name">[ Otoya ]</div><ul><li>Dynamo (C) — во вражеский бокс / из него запрещено. Только с тиммейтом на вашей половине.</li><li class="new-item">Shuriken Volley — запрещён.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Raichi ]</div><ul><li>Victory Pass (C) — во вражеский бокс / из него запрещено. Только с тиммейтом на вашей половине.</li><li>Matchup Victory (C AWK) — во вражеский бокс / из него запрещено. Только с тиммейтом на вашей половине.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Karasu ]</div><ul><li>Пасы в способностях — запрещено во вражеском боксе / во вражеский бокс.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Ness ]</div><ul><li>Mirror Shield (C) — только 2 раза за тайм + 1 в овертайме. Не забрал мяч — не считается.</li><li>Illusion Cross (C) — во вражеский бокс / из него запрещено. Только с тиммейтом на вашей половине.</li><li>Weapon Disabler (V) — только 4 раза за тайм + 1 в овертайме.</li><li>Magician Mirage (V) — запрещён во вражеском боксе.</li><li>Flexible Spell (V) — во вражеский бокс / из него запрещено. Только с тиммейтом на вашей половине.</li><li>A New Spell (B AWK) — в любой бокс / из любого бокса запрещено. Только с тиммейтом на вашей половине.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Nagi ]</div><ul><li>Запрещено скидывать M1 с подкат + Trap (C).</li><li>Запрещено Trap (C) + подкат, Walk Trap (C) в атаке.</li><li>Defensive Trap (C) — только 2 раза за тайм. Разрешено на вражеской половине.</li><li>Defensive Trap (C) — запрещён с целью сделать Global Cooldown.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Skeleton Nagi ]</div><ul><li>Defensive Skeleton Trap (C) — только 2 раза за тайм. Разрешено на вражеской половине.</li><li>Skull Roulette (B) — запрещено во вражеском боксе.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Hiori ]</div><ul><li>Запрещено влетать в бокс с Cold Logic Turn (C).</li><li>Link Pass (C), Below Zero Pass (V) — запрещено давать пас в бокс или на чужую часть поля.</li><li>Absolute Zero Defense (V) — только 4 раза за тайм + 1 в овертайме.</li><li>Пас после Ice Dribble (V) — только с тиммейтом на вашей половине.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Bachira ]</div><ul><li>Monster Shot (V) + Volley — запрещено.</li><li>Monster Shot (V) — только с первой линии.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ NEL Bachira ]</div><ul><li>Roulette Steal (C) — запрещён в боксе.</li><li>Heel Center (B) — во вражеский бокс / из него запрещено. Только с тиммейтом на вашей половине и только если у вас мяч.</li><li>Моментальный удар после Heel Center (B) запрещён (Kaiser Impact, Trap в воздухе, Destroyer Curve Shot и т.д.). Забили — отдать FG.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Firework Bachira ]</div><ul><li>Explosive Dribbling (C) — залетать и бить во вражеском боксе запрещено.</li><li>Volley Shot + Explosive Dribbling (C) — запрещено для бага с бесконечным дриблингом.</li><li>Rocket Pass (V) — во вражеский бокс / из него запрещено. Только с тиммейтом на вашей половине.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ King ]</div><ul><li>Lion Steal (C) — запрещено на вражеской части поля.</li><li>Chop Feast (V) — запрещён.</li><li>Chop Dribble (V) — запрещено влетать в бокс.</li><li>Predator Shot (V) — можно везде, кроме бокса.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Krampus Barou ]</div><ul><li>Crash Steal (C) — запрещено в своём боксе / залетать в свой бокс. Если предотвращён гол — Free Goal.</li><li>Crash Steal (C) — запрещено для отбора в боксе соперника.</li><li>Blizzard Fang Shot (C) — запрещён во вражеском боксе.</li><li>Blizzard Fang Shot (C) + Predator Krampus (B) — бить только со второй линии.</li><li>Krampus Chop Dribble (V) — запрещён в боксе / залетать в бокс.</li><li>Predator Krampus (B) — запрещено с потоками на скорость.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Shidou ]</div><ul><li>Demon Drive (V) — запрещено во вражеском боксе, но разрешено залетать с ним.</li><li>Demon Drive (V) + Volley — запрещено залетать во вражеский бокс.</li><li>Dragon Header (V) — запрещено во вражеском боксе.</li><li>Unstoppable Demon (C AWK) — запрещён.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Demon Shidou ]</div><ul><li>Demonic Dribble (C) — запрещён в боксе, разрешено залетать.</li><li>Demonic Shot (C) — запрещён во вражеском боксе.</li><li>Demonic Overhead Kick (V) — запрещён во вражеском боксе.</li><li>Demonic Header (B) — запрещён во вражеском боксе.</li><li>Inferno Dragon Drive (C AWK) — только для отбора. Как удар — запрещено.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Reo ]</div><ul><li>Запрещено использовать скиллы при потоке с уменьшением Cooldown. Искл.: [ Emperor ].</li><li>Можно копировать одну из: Malicia (C), Force Defense (C), Total Clearance (V), Golden Defense (B) — только 1 раз, если таких стилей нет в команде.</li><li>Запрещено копировать пасы, если в команде есть стиль с пасом и он его использует.</li><li>Запрещено копировать любые защитные скиллы, World Class, Twister Pass (V), Trap (C) / Skull Trap (C) / Skeleton Trap (C), Center of Gravity (C), Off Balance (C).</li><li>Diving Header (V) — можно копировать 3 раза за тайм.</li><li>Правила скопированных способностей распространяются на вас.</li><li>Camouflage/Stealth Step (V) — 3 раза за тайм + 1 в овертайме. На свободный мяч / не забрал — не считается. Запрещено в боксе (можно залетать). Запрещено без мяча на вражеской половине.</li><li>Cross Elastico Nutmeg (V) — можно в боксе / влетать, но запрещено на игроке CM.</li><li>Trivela Shot (V) — запрещён во вражеском боксе.</li><li>Chameleon Defence (B) — 2 раза за тайм. Не считается 1/2, если мяч летел от тиммейта. Запрещено на другой половине и в своём боксе / влетать в него.</li><li>Oppressive Pass (B) / Lob Pass (V) — запрещены.</li><li>Physical Pressure (B) — запрещён.</li><li>Lag Avatar запрещён. При лагах во время Camouflage/Stealth Step (V) — обязаны снять аксессуары. Иначе ТП тайма или переигровка.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Aiku ]</div><ul><li>Только на позиции Central Midfielder.</li><li>Total Clearance (V) — запрещено в своём боксе; если ты не в своём боксе, а оппонент в боксе; если ты в своём, а оппонент нет; во время способности удара оппонента; после способности удара оппонента (Free Goal).</li><li>Total Clearance (V) — 3 раза за тайм + 1 в овертайме. Не забрал — считается.</li><li>Snake Interception (V) — 3 раза + 1 в овертайме. Не реализовалась — не считается.</li><li>Намеренный гост мяча через Snake Interception (V) — запрещён (искл.: во время пасов).</li><li>Snake Vision (B) + поток на скорость — запрещено.</li><li>Во время Awakening — 2 отбора.</li></ul></div>
+
+                <div class="style-card updated"><div class="style-card-name">[ Rin ]</div><ul><li>Center of Gravity (C) — запрещено, когда соперник использует способность удара.</li><li>Center of Gravity (C) — 2 раза за тайм + 1 в овертайме.</li><li>Curve Shot (C) — запрещён во вражеском боксе.</li><li>Predator Break (B) — запрещён в боксе / залетать во вражеский бокс.</li><li class="new-item">Запрещено использовать прыжок + C возле бокса.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ NEL Rin ]</div><ul><li>Center of Gravity (C) — запрещено, когда соперник использует способность удара.</li><li>Center of Gravity (C) — 2 раза за тайм + 1 в овертайме.</li><li>Annihilation (C) — запрещён во вражеском боксе.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Bloodmoon Rin ]</div><ul><li>Crescent Shot (C) — запрещён во вражеском боксе.</li><li>Lunar Axis (V) — только 3 раза за тайм.</li><li>Залетать с Blood Dribble (B) во вражеский бокс — запрещено.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Charles ]</div><ul><li>Sky Arc Pass (C) — во вражеский бокс / из него запрещено. Только с тиммейтом на вашей половине.</li><li>Contrarian Dribble (V) — запрещено во вражеском боксе. Пас после него — во вражеский бокс / из него запрещено; только с тиммейтом на вашей половине.</li><li>[ Contrarian ] после Contrarian Dribble (V) — запрещено.</li><li>Contrarian Defense (B) — 4 раза за тайм + 1 в овертайме.</li><li>Dartboard Lens (B) + поток на скорость — запрещено.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Gingerbeard Charles ]</div><ul><li>Gingerbeard Dribble (C) — запрещено во вражеском боксе / влетать.</li><li>Cookie Cross (V) & Gingerbread Cannon (B) — во вражеский бокс / из него запрещено. Только с тиммейтом на вашей половине.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Yukimiya ]</div><ul><li>LaBoba (C) & Street Sweep (V) — любые баги на движение запрещены, Slide Tech запрещён.</li><li>LaBoba (C) & Street Sweep (V) — запрещены во вражеском боксе, можно залетать.</li><li>Street Sweep (V) + Rainbow Flick — запрещено.</li><li>Street Dribble (C AWK) — запрещено в боксе / залетать.</li><li>Gyro Shot (B) — запрещён во вражеском боксе.</li><li>Спам дриблингом — запрещён (интервал минимум 1 секунда).</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Easter Yukimiya ]</div><ul><li>Egg Shuffle (V) — запрещён в боксе / залетать.</li><li>Hat Steal (V) — 3 раза + 1 в овертайме. Запрещён в боксе.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Kunigami ]</div><ul><li>Запрещено использовать скиллы при потоке с уменьшением Cooldown. Искл.: [ Emperor ].</li><li>Bodyblock (V) — как дриблинг/атакующий приём везде, кроме бокса соперника. Можно за пределами бокса и влетать. Комбинация с Power Shot запрещена. Bodyblock + Tech (взлёт и удар) разрешена, если не Power Shot. 4 + 1 в овертайме. Запрещён в любом боксе (в своём — как дриблинг).</li><li>Crushing Header (C) — 2 + 1 в овертайме (промахи не считаются). На половине соперника — как пас или удар без ограничений. Удар — только за пределами бокса.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Sae ]</div><ul><li>Off Balance (C) — запрещено во время и после способности удара оппонента. Запрещён в любом боксе.</li><li>Off Balance (C) — 3 раза за тайм + 1 в овертайме.</li><li>Divine Pass (C) — во вражеский бокс / из него запрещено. Только с тиммейтом на вашей половине.</li><li>Celestial Destruction (V) — запрещён во вражеском боксе / залетать.</li><li>Perfection Shot (B) — запрещён во вражеском боксе.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Reaper Sae ]</div><ul><li>Perfect Pass (C) — во вражеский бокс / из него запрещено. Только с тиммейтом на вашей половине.</li><li>Scythe Slam (V) — 3 раза за тайм. Запрещён в боксе.</li><li>Graveyard (B) + поток на скорость — запрещено.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Kaiser ]</div><ul><li>Kaiser Impact (C) и IMPACT. (V) — запрещено бить во вражеском боксе.</li><li>Kaiser Impact (C) + [ Destructive Impulses ] — запрещено + нельзя бить во вражеском боксе.</li><li>Subjection (V) — запрещён.</li><li>Kaiser Volley (B) — запрещён на противоположной половине.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Elf Emperor ]</div><ul><li>Elf Impact (C) + Volley — запрещено.</li><li>Elf Impact (C) — запрещён во вражеском боксе.</li><li>Elf Impact (C) + [ Destructive Impulses ] — запрещено + нельзя бить во вражеском боксе.</li><li>Elf Emperor Volley (V) — запрещён на противоположной половине.</li><li>Helper Dribble (V) — использовать в боксе, спавнить за боксом и влетать — запрещено. Баг с телепортом мяча — запрещён.</li></ul></div>
+
+                <div class="style-card updated"><div class="style-card-name">[ Don Lorenzo ]</div><ul><li>Только на позиции Central Midfielder.</li><li>Zombie Steal (V) — запрещён в своём мини-боксе.</li><li class="new-item">Undead Walk — 1 раз за тайм.</li><li class="new-item">Zombie Steal — 1 раз за тайм.</li><li class="new-item">Golden Defense — 1+1 (1 в основное время + 1 в овертайме).</li><li class="new-item">Не сочетается с [ Aiku ]. Считается за World Class. На DW допускается.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Subzero Loki ]</div><ul><li>Запрещён с потоками на скорость. Искл.: [ Emperor ].</li><li>Только на позиции Central Midfielder.</li><li>Godspeed Freeze (V) — 4 раза за тайм + 1 в овертайме.</li><li>Если в команде есть [ Subzero Loki ]: [ Reo ] — только 3+0 Camouflage; [ Nagi ] / [ NEL Nagi ] / [ Skeleton Nagi ] / [ Easter Yukimiya ] — только 1+0 Defensive Trap.</li><li>Godspeed Freeze (V) — запрещено для глобал кд на Trap. Запрещено делать мяч IFrame при атаке [ Chigiri ] под Speedster (C) / [ NEL Chigiri ] под High-Speed Speedster (C) — считается как ФГ.</li><li>Frost Counter (B) — запрещён.</li></ul></div>
+
+                <div class="style-card"><div class="style-card-name">[ Santa Lavinho ]</div><ul><li>Shot после Wrapped Dribble (C) — запрещён во вражеском боксе.</li><li>Christmas Stampede (V) и Sleigh Ride (B) — для дриблинга на чужой половине разрешены.</li></ul></div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p><strong>Mirage League</strong> · Официальный регламент · Документ сгенерирован автоматически</p>
+        </footer>
+    </main>
+
+    <script>
+        const navToggle = document.getElementById('navToggle');
+        const navSidebar = document.getElementById('navSidebar');
+        const navOverlay = document.getElementById('navOverlay');
+
+        navToggle.addEventListener('click', () => {
+            navSidebar.classList.toggle('open');
+            navOverlay.classList.toggle('show');
+        });
+        navOverlay.addEventListener('click', () => {
+            navSidebar.classList.remove('open');
+            navOverlay.classList.remove('show');
+        });
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navSidebar.classList.remove('open');
+                navOverlay.classList.remove('show');
+            });
+        });
+
+        const sections = document.querySelectorAll('.section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + id));
+                }
+            });
+        }, { root: null, rootMargin: '-20% 0px -60% 0px', threshold: 0 });
+        sections.forEach(s => observer.observe(s));
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.05 });
+        sections.forEach(s => revealObserver.observe(s));
+
+        const scrollTop = document.getElementById('scrollTop');
+        window.addEventListener('scroll', () => scrollTop.classList.toggle('visible', window.scrollY > 500));
+        scrollTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    </script>
+</body>
+</html>
