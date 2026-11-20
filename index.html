@@ -39,24 +39,24 @@
             overflow-x: hidden;
         }
 
-        ::selection { background: rgba(168,85,247,0.35); color: #fff; }
+	::selection { background: rgba(168,85,247,0.35); color: #fff; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #040209; }
         ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--v2), var(--v3)); border-radius: 3px; }
 
         /* === AURORA BACKGROUND === */
- 
+
         .bg-effects {
             position: fixed; inset: 0; z-index: 0; pointer-events: none;
             background-image:
-            linear-gradient(160deg, rgba(4,2,9,0.82), rgba(12,6,22,0.78)),
-            url('335447872226359669.jpg');
+                linear-gradient(160deg, rgba(4,2,9,0.72), rgba(12,6,22,0.68)),
+                url('335447872226359669.jpg');
             background-size: cover;
-            background-position: center;
+            background-position: center center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-}
-        
+        }
+
         .bg-effects::before {
             content: ''; position: absolute; top: 12%; left: -8%;
             width: 55%; height: 55%;
@@ -70,6 +70,8 @@
             background: radial-gradient(ellipse, rgba(217,70,239,0.06) 0%, transparent 70%);
             filter: blur(70px);
             animation: aurora2 24s ease-in-out infinite reverse;
+        }
+
         }
         @keyframes aurora1 {
             0%,100% { transform: translate(0,0) scale(1); }
@@ -492,6 +494,14 @@
         }
         .nav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 999; backdrop-filter: blur(4px); }
         .nav-overlay.show { display: block; }
+
+        @media (max-width: 768px) {
+            .bg-effects {
+                background-size: contain;
+                background-position: center top;
+                background-attachment: scroll;
+            }
+        }
     </style>
 </head>
 <body>
